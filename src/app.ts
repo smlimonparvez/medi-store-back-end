@@ -33,7 +33,7 @@ app.use("/api/admin", adminRoutes);
 
 // ── Health check ─────────────────────────────────────────────────────────────
 app.get("/", (_req: Request, res: Response) => {
-  res.json({ success: true, message: "💊 MediStore API is running!" });
+  res.json({ success: true, message: "MediStore API is running!" });
 });
 
 // ── 404 handler ──────────────────────────────────────────────────────────────
