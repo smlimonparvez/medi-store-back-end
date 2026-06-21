@@ -1,5 +1,6 @@
 import prisma from "../../config/prisma";
 import AppError from "../../utils/AppError";
+import { UserStatus } from "../../utils/types";
 const getAllUsers = async (page = 1, limit = 10, role?: string) => {
   const skip = (page - 1) * limit;
 
@@ -31,7 +32,7 @@ const getAllUsers = async (page = 1, limit = 10, role?: string) => {
   };
 };
 
-const updateUserStatus = async (userId: number, status: string) => {
+const updateUserStatus = async (userId: number, status: UserStatus) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new AppError("User not found.", 404);
   if (user.role === "admin") throw new AppError("Cannot change admin status.", 400);

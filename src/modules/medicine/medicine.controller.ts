@@ -2,25 +2,26 @@ import { Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import MedicineService from "./medicine.service";
+import { getQueryString } from "../../utils/types";
 
 const getAllMedicines = catchAsync(async (req: Request, res: Response) => {
   const { search, categoryId, minPrice, maxPrice, manufacturer, page, limit } = req.query;
 
   const result = await MedicineService.getAllMedicines({
-    search: search as string,
-    categoryId: categoryId ? parseInt(categoryId as string) : undefined,
-    minPrice: minPrice ? parseFloat(minPrice as string) : undefined,
-    maxPrice: maxPrice ? parseFloat(maxPrice as string) : undefined,
-    manufacturer: manufacturer as string,
-    page: page ? parseInt(page as string) : 1,
-    limit: limit ? parseInt(limit as string) : 12,
+    search: getQueryString(search),
+    categoryId: categoryId ? parseInt(getQueryString(categoryId)!) : undefined,
+    minPrice: minPrice ? parseFloat(getQueryString(minPrice)!) : undefined,
+    maxPrice: maxPrice ? parseFloat(getQueryString(maxPrice)!) : undefined,
+    manufacturer: getQueryString(manufacturer),
+    page: page ? parseInt(getQueryString(page)!) : 1,
+    limit: limit ? parseInt(getQueryString(limit)!) : 12,
   });
 
   sendResponse(res, { statusCode: 200, success: true, message: "Medicines retrieved.", data: result });
 });
 
 const getMedicineById = catchAsync(async (req: Request, res: Response) => {
-  const medicine = await MedicineService.getMedicineById(parseInt(req.params.id));
+  const medicine = await MedicineService.getMedicineById(parseInt(getQueryString(req.params.id)!));
   sendResponse(res, { statusCode: 200, success: true, message: "Medicine retrieved.", data: medicine });
 });
 
@@ -31,7 +32,7 @@ const createMedicine = catchAsync(async (req: Request, res: Response) => {
 
 const updateMedicine = catchAsync(async (req: Request, res: Response) => {
   const medicine = await MedicineService.updateMedicine(
-    parseInt(req.params.id),
+    parseInt(getQueryString(req.params.id)!),
     req.user!.id,
     req.user!.role === "admin",
     req.body
@@ -41,7 +42,7 @@ const updateMedicine = catchAsync(async (req: Request, res: Response) => {
 
 const deleteMedicine = catchAsync(async (req: Request, res: Response) => {
   await MedicineService.deleteMedicine(
-    parseInt(req.params.id),
+    parseInt(getQueryString(req.params.id)!),
     req.user!.id,
     req.user!.role === "admin"
   );

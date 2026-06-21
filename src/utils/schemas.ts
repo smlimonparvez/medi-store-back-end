@@ -7,7 +7,7 @@ export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["customer", "seller"], {
-    errorMap: () => ({ message: "Role must be either customer or seller" }),
+    error: "Role must be either customer or seller",
   }),
   phone: z.string().min(10).max(15).optional(),
 });
@@ -63,7 +63,7 @@ export const createOrderSchema = z.object({
 
 export const updateOrderStatusSchema = z.object({
   status: z.enum(["placed", "processing", "shipped", "delivered", "cancelled"], {
-    errorMap: () => ({ message: "Invalid order status" }),
+    error: "Invalid order status",
   }),
 });
 
@@ -79,6 +79,6 @@ export const createReviewSchema = z.object({
 
 export const updateUserStatusSchema = z.object({
   status: z.enum(["active", "banned"], {
-    errorMap: () => ({ message: "Status must be active or banned" }),
+    error: "Status must be active or banned",
   }),
 });

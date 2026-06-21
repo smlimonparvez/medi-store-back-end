@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import PaymentService from "./payment.service";
 import config from "../../config";
+import { getQueryString } from "../../utils/types";
 
 // Customer initiates Stripe checkout
 const createCheckoutSession = catchAsync(async (req: Request, res: Response) => {
@@ -38,7 +39,7 @@ const webhook = async (req: Request, res: Response) => {
 
 // Customer cancelled payment — clean up the pending order
 const cancelPendingOrder = catchAsync(async (req: Request, res: Response) => {
-  const orderId = parseInt(req.params.orderId);
+  const orderId = parseInt(getQueryString(req.params.orderId)!);
   await PaymentService.cancelPendingOrder(orderId, req.user!.id);
 
   sendResponse(res, {

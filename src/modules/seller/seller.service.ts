@@ -1,5 +1,6 @@
 import prisma from "../../config/prisma";
 import AppError from "../../utils/AppError";
+import { OrderStatus } from "../../utils/types";
 const getMyMedicines = async (sellerId: number) => {
   const medicines = await prisma.medicine.findMany({
     where: { sellerId },
@@ -68,7 +69,7 @@ const getMyOrders = async (sellerId: number, page = 1, limit = 10) => {
 const updateOrderStatus = async (
   orderId: number,
   sellerId: number,
-  status: string
+  status: OrderStatus
 ) => {
   // Verify this seller has a medicine in this order
   const orderItem = await prisma.orderItem.findFirst({

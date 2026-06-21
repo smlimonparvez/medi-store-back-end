@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import ReviewService from "./review.service";
+import { getQueryString } from "../../utils/types";
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
   const review = await ReviewService.createReview({
@@ -17,7 +18,7 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getReviewsByMedicine = catchAsync(async (req: Request, res: Response) => {
-  const medicineId = parseInt(req.params.medicineId);
+  const medicineId = parseInt(getQueryString(req.params.medicineId)!);
   if (isNaN(medicineId)) {
     return sendResponse(res, { statusCode: 400, success: false, message: "Invalid medicine ID." });
   }

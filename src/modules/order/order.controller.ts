@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import OrderService from "./order.service";
+import { getQueryString } from "../../utils/types";
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
   const order = await OrderService.createOrder({ ...req.body, customerId: req.user!.id });
@@ -15,19 +16,19 @@ const getMyOrders = catchAsync(async (req: Request, res: Response) => {
 
 const getOrderById = catchAsync(async (req: Request, res: Response) => {
   const order = await OrderService.getOrderById(
-    parseInt(req.params.id), req.user!.id, req.user!.role
+    parseInt(getQueryString(req.params.id)!), req.user!.id, req.user!.role
   );
   sendResponse(res, { statusCode: 200, success: true, message: "Order retrieved.", data: order });
 });
 
 const cancelOrder = catchAsync(async (req: Request, res: Response) => {
-  const order = await OrderService.cancelOrder(parseInt(req.params.id), req.user!.id);
+  const order = await OrderService.cancelOrder(parseInt(getQueryString(req.params.id)!), req.user!.id);
   sendResponse(res, { statusCode: 200, success: true, message: "Order cancelled.", data: order });
 });
 
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
-  const page = req.query.page ? parseInt(req.query.page as string) : 1;
-  const limit = req.query.limit ? parseInt(req.query.limit as string) : 15;
+  const page = req.query.page ? parseInt(getQueryString(req.query.page)!) : 1;
+  const limit = req.query.limit ? parseInt(getQueryString(req.query.limit)!) : 15;
   const result = await OrderService.getAllOrders(page, limit);
   sendResponse(res, { statusCode: 200, success: true, message: "All orders retrieved.", data: result });
 });

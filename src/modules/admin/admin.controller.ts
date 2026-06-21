@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import AdminService from "./admin.service";
 import OrderService from "../order/order.service";
+import { getQueryString, UserStatus } from "../../utils/types";
 
 const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
   const stats = await AdminService.getDashboardStats();
@@ -10,18 +11,18 @@ const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const page = req.query.page ? parseInt(req.query.page as string) : 1;
-  const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
-  const role = req.query.role as string | undefined;
+  const page = req.query.page ? parseInt(getQueryString(req.query.page)!) : 1;
+  const limit = req.query.limit ? parseInt(getQueryString(req.query.limit)!) : 10;
+  const role = getQueryString(req.query.role);
   const result = await AdminService.getAllUsers(page, limit, role);
   sendResponse(res, { statusCode: 200, success: true, message: "Users retrieved.", data: result });
 });
 
 const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.id);
+  const userId = parseInt(getQueryString(req.params.id)!);
   if (isNaN(userId)) return sendResponse(res, { statusCode: 400, success: false, message: "Invalid user ID." });
   const { status } = req.body;
-  const user = await AdminService.updateUserStatus(userId, status as string);
+  const user = await AdminService.updateUserStatus(userId, status as UserStatus);
   sendResponse(res, {
     statusCode: 200,
     success: true,

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ZodSchema, ZodError } from "zod";
+import { ZodSchema } from "zod";
 
 // Middleware factory — pass a Zod schema, get back an Express middleware
 // that validates req.body and calls next() or returns a 400 with all errors
@@ -9,7 +9,7 @@ const validate =
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
-      const errors = (result.error as ZodError).errors.map((e) => ({
+      const errors = result.error.issues.map((e) => ({
         field: e.path.join("."),
         message: e.message,
       }));
