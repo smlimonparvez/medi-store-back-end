@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./middlewares/error.middleware";
+import { generalLimiter } from "./middlewares/rateLimiter.middleware";
 import PaymentController from "./modules/payment/payment.controller";
 
 import authRoutes     from "./modules/auth/auth.route";
@@ -26,12 +27,15 @@ app.post(
 app.use(
   cors({
     origin:      process.env.FRONTEND_URL || "http://localhost:3000",
-    credentials: true, 
+    credentials: true,
   })
 );
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// General rate limiter — applied to all API routes
+app.use("/api", generalLimiter);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use("/api/auth",       authRoutes);
@@ -56,7 +60,7 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// ── Global error handler (must be last) ──────────────────────────────────────
+// ── Global error handler ──────────────────────────────────────────────────────
 app.use(globalErrorHandler);
 
 export default app;
