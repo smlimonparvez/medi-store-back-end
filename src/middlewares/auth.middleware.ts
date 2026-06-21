@@ -9,11 +9,7 @@ export type Role = "customer" | "seller" | "admin";
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        id: number;
-        email: string;
-        role: Role;
-      };
+      user?: { id: number; email: string; role: Role };
     }
   }
 }
@@ -21,16 +17,15 @@ declare global {
 export const authenticate = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
-    const authHeader = req.headers.authorization;
+    const token =
+      req.cookies?.medistore_token || req.headers.authorization?.split(" ")[1];
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!token) {
       throw new AppError("You are not logged in. Please login first.", 401);
     }
-
-    const token = authHeader.split(" ")[1];
 
     const decoded = jwt.verify(token, config.jwtSecret) as {
       id: number;
@@ -43,11 +38,10 @@ export const authenticate = async (
     if (!user) {
       throw new AppError("User no longer exists.", 401);
     }
-
     if (user.status === "banned") {
       throw new AppError(
         "Your account has been banned. Please contact support.",
-        403
+        403,
       );
     }
 
@@ -65,7 +59,7 @@ export const authorize = (...roles: Role[]) => {
     }
     if (!roles.includes(req.user.role)) {
       return next(
-        new AppError("You do not have permission to perform this action.", 403)
+        new AppError("You do not have permission to perform this action.", 403),
       );
     }
     next();
