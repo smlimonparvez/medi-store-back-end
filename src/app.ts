@@ -24,9 +24,21 @@ app.post(
 );
 
 // ── Global middlewares ────────────────────────────────────────────────────────
+const allowedOrigins = [
+  process.env.FRONTEND_URL,  
+  process.env.FRONTEND_URL_2,       
+  "http://localhost:3000",  
+  "http://localhost:3001",         
+].filter(Boolean) as string[];
+
 app.use(
   cors({
-    origin:      process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (Postman, curl, server-to-server)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
     credentials: true,
   })
 );
