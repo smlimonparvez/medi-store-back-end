@@ -4,9 +4,9 @@ A RESTful API for an online medicine store built with Express.js, TypeScript, Po
 
 ## Live Deployment
 
-- Backend API: `https://medi-store-back-end-three.vercel.app`
-- Frontend URL: `https://medi-store-front-end-alpha.vercel.app`
-- Frontend Extended URL: `https://medi-store-front-end-extended.vercel.app`
+- Backend API: [https://medi-store-back-end-three.vercel.app](https://medi-store-back-end-three.vercel.app)
+- Frontend URL: [https://medi-store-front-end-alpha.vercel.app](https://medi-store-front-end-alpha.vercel.app)
+- Frontend Extended URL: [https://medi-store-front-end-extended.vercel.app](https://medi-store-front-end-extended.vercel.app)
 
 ## Tech Stack
 
@@ -82,19 +82,81 @@ npm run prisma:studio
 ## Project Structure
 
 ```text
-src/
-├── app.ts                # Express application setup
-├── server.ts             # Server startup and database connect
-├── config/               # Environment and Prisma configuration
-├── middlewares/          # Auth, error handling, rate limiting
-├── modules/              # Domain modules (auth, category, medicine, etc.)
-└── utils/                # Shared helpers, schemas, types, validators
+.
+├── .env
+├── .gitignore
+├── .vercel/
+├── api/
+│   └── index.ts
+├── package-lock.json
+├── package.json
+├── prisma/
+│   ├── migrations/
+│   │   ├── 20260619060358_create_store/
+│   │   └── 20260621022129_medi_store_v1_1/
+│   ├── migration_lock.toml
+│   ├── schema.prisma
+│   └── seed.ts
+├── prisma.config.ts
+├── README.md
+├── src/
+│   ├── app.ts
+│   ├── server.ts
+│   ├── config/
+│   │   ├── index.ts
+│   │   └── prisma.ts
+│   ├── middlewares/
+│   │   ├── auth.middleware.ts
+│   │   ├── error.middleware.ts
+│   │   └── rateLimiter.middleware.ts
+│   ├── modules/
+│   │   ├── admin/
+│   │   │   ├── admin.controller.ts
+│   │   │   ├── admin.route.ts
+│   │   │   └── admin.service.ts
+│   │   ├── auth/
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.route.ts
+│   │   │   └── auth.service.ts
+│   │   ├── category/
+│   │   │   ├── category.controller.ts
+│   │   │   ├── category.route.ts
+│   │   │   └── category.service.ts
+│   │   ├── medicine/
+│   │   │   ├── medicine.controller.ts
+│   │   │   ├── medicine.route.ts
+│   │   │   └── medicine.service.ts
+│   │   ├── order/
+│   │   │   ├── order.controller.ts
+│   │   │   ├── order.route.ts
+│   │   │   └── order.service.ts
+│   │   ├── payment/
+│   │   │   ├── payment.controller.ts
+│   │   │   ├── payment.route.ts
+│   │   │   └── payment.service.ts
+│   │   ├── review/
+│   │   │   ├── review.controller.ts
+│   │   │   ├── review.route.ts
+│   │   │   └── review.service.ts
+│   │   └── seller/
+│   │       ├── seller.controller.ts
+│   │       ├── seller.route.ts
+│   │       └── seller.service.ts
+│   └── utils/
+│       ├── AppError.ts
+│       ├── catchAsync.ts
+│       ├── schemas.ts
+│       ├── sendResponse.ts
+│       ├── types.ts
+│       └── validate.ts
+├── tsconfig.json
+└── vercel.json
 ```
 
 ## API Base URL
 
 - Local: `http://localhost:5000`
-- Production: `https://medi-store-back-end-three.vercel.app`
+- Production: [https://medi-store-back-end-three.vercel.app](https://medi-store-back-end-three.vercel.app)
 
 ## Authentication
 
@@ -108,104 +170,82 @@ This API uses JWT authentication.
 
 ### Auth
 
-- `POST /api/auth/register`
-  - Register a new user
-  - Request body: `{ name, email, password, role }`
-- `POST /api/auth/login`
-  - Login with email and password
-  - Request body: `{ email, password }`
-- `POST /api/auth/logout`
-  - Logout current user
-- `GET /api/auth/me`
-  - Get authenticated user profile
-- `PATCH /api/auth/profile`
-  - Update authenticated user profile
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/api/auth/register` | Public | Register a new user |
+| POST | `/api/auth/login` | Public | Login with email and password |
+| POST | `/api/auth/logout` | Authenticated | Logout current user |
+| GET | `/api/auth/me` | Authenticated | Get authenticated user profile |
+| PATCH | `/api/auth/profile` | Authenticated | Update authenticated user profile |
 
 ### Categories
 
-- `GET /api/categories`
-  - Get all categories
-- `POST /api/categories`
-  - Create a new category (admin only)
-- `PUT /api/categories/:id`
-  - Update a category by ID (admin only)
-- `DELETE /api/categories/:id`
-  - Delete a category by ID (admin only)
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/api/categories` | Public | Get all categories |
+| POST | `/api/categories` | Admin | Create a new category |
+| PUT | `/api/categories/:id` | Admin | Update a category |
+| DELETE | `/api/categories/:id` | Admin | Delete a category |
 
 ### Medicines
 
-- `GET /api/medicines`
-  - Get all medicines
-- `GET /api/medicines/:id`
-  - Get medicine details by ID
-- `POST /api/medicines`
-  - Create a new medicine (seller or admin)
-- `PUT /api/medicines/:id`
-  - Update a medicine by ID (seller or admin)
-- `DELETE /api/medicines/:id`
-  - Delete a medicine by ID (seller or admin)
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/api/medicines` | Public | Get all medicines |
+| GET | `/api/medicines/:id` | Public | Get medicine by ID |
+| POST | `/api/medicines` | Seller/Admin | Create medicine |
+| PUT | `/api/medicines/:id` | Seller/Admin | Update medicine |
+| DELETE | `/api/medicines/:id` | Seller/Admin | Delete medicine |
 
 ### Orders
 
-- `POST /api/orders`
-  - Create a new order (customer only)
-- `GET /api/orders/my-orders`
-  - Get orders for authenticated customer
-- `GET /api/orders/:id`
-  - Get order by ID (authenticated users)
-- `PATCH /api/orders/:id/cancel`
-  - Cancel an order (customer only)
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/api/orders` | Customer | Create a new order |
+| GET | `/api/orders/my-orders` | Customer | Get authenticated customer orders |
+| GET | `/api/orders/:id` | Authenticated | Get order by ID |
+| PATCH | `/api/orders/:id/cancel` | Customer | Cancel an order |
 
 ### Payments
 
-- `POST /api/payments/create-checkout-session`
-  - Create a Stripe checkout session for a customer order
-- `DELETE /api/payments/cancel/:orderId`
-  - Cancel a pending Stripe order (customer only)
-- `POST /api/payments/webhook`
-  - Stripe webhook endpoint for payment events
-  - Uses raw JSON body and is registered before `express.json()` in `src/app.ts`
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/api/payments/create-checkout-session` | Customer | Create Stripe checkout session |
+| DELETE | `/api/payments/cancel/:orderId` | Customer | Cancel pending Stripe order |
+| POST | `/api/payments/webhook` | Public | Stripe webhook endpoint |
 
 ### Reviews
 
-- `GET /api/reviews/medicine/:medicineId`
-  - Get reviews for a medicine
-- `POST /api/reviews`
-  - Create a review (customer only)
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/api/reviews/medicine/:medicineId` | Public | Get reviews for a medicine |
+| POST | `/api/reviews` | Customer | Create a product review |
 
 ### Seller Routes
 
 All routes under `/api/seller` require the `seller` role.
 
-- `GET /api/seller/dashboard`
-  - Get seller dashboard stats
-- `GET /api/seller/medicines`
-  - Get medicines created by the authenticated seller
-- `GET /api/seller/medicines/:id`
-  - Get a seller medicine by ID
-- `POST /api/seller/medicines`
-  - Create a medicine as a seller
-- `PUT /api/seller/medicines/:id`
-  - Update a seller medicine by ID
-- `DELETE /api/seller/medicines/:id`
-  - Delete a seller medicine by ID
-- `GET /api/seller/orders`
-  - Get seller orders
-- `PATCH /api/seller/orders/:id`
-  - Update seller order status
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/api/seller/dashboard` | Seller | Get seller dashboard stats |
+| GET | `/api/seller/medicines` | Seller | Get seller medicines |
+| GET | `/api/seller/medicines/:id` | Seller | Get seller medicine by ID |
+| POST | `/api/seller/medicines` | Seller | Create medicine |
+| PUT | `/api/seller/medicines/:id` | Seller | Update seller medicine |
+| DELETE | `/api/seller/medicines/:id` | Seller | Delete seller medicine |
+| GET | `/api/seller/orders` | Seller | Get seller orders |
+| PATCH | `/api/seller/orders/:id` | Seller | Update seller order status |
 
 ### Admin Routes
 
 All routes under `/api/admin` require the `admin` role.
 
-- `GET /api/admin/dashboard`
-  - Get admin dashboard stats
-- `GET /api/admin/users`
-  - Get all users
-- `PATCH /api/admin/users/:id`
-  - Update a user status or role
-- `GET /api/admin/orders`
-  - Get all orders
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/api/admin/dashboard` | Admin | Get admin dashboard stats |
+| GET | `/api/admin/users` | Admin | Get all users |
+| PATCH | `/api/admin/users/:id` | Admin | Update user status or role |
+| GET | `/api/admin/orders` | Admin | Get all orders |
 
 ## CORS Configuration
 
